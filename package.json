@@ -8,10 +8,8 @@
     "check": "node scripts/qa-check.js",
     "dist:win": "electron-builder --win nsis"
   },
-  "dependencies": {
-    "electron": "^31.7.7"
-  },
   "devDependencies": {
+    "electron": "^31.7.7",
     "electron-builder": "^24.13.3"
   },
   "author": "OpenAI",
