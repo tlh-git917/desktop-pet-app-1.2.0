@@ -295,8 +295,9 @@ try {
     if (workflowRoot === workflowGitHub) pass('根目录 build.yml 与 .github/workflows/build.yml 已保持一致');
     else warn('根目录 build.yml 与 .github/workflows/build.yml 不一致', '建议保持一致，避免发布流程混淆。');
   }
-const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-const packResult = run(npmCommand, ['pack', '--dry-run']);
+const packResult = process.platform === 'win32'
+  ? run('cmd.exe', ['/d', '/s', '/c', 'npm pack --dry-run'])
+  : run('npm', ['pack', '--dry-run']);
 
 if (packResult.status === 0) {
   pass('npm pack --dry-run 通过', (packResult.stdout || '').trim());
