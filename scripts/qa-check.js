@@ -295,13 +295,15 @@ try {
     if (workflowRoot === workflowGitHub) pass('根目录 build.yml 与 .github/workflows/build.yml 已保持一致');
     else warn('根目录 build.yml 与 .github/workflows/build.yml 不一致', '建议保持一致，避免发布流程混淆。');
   }
+const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+const packResult = run(npmCommand, ['pack', '--dry-run']);
 
-  const packResult = run('npm', ['pack', '--dry-run']);
-  if (packResult.status === 0) {
-    pass('npm pack --dry-run 通过', (packResult.stdout || '').trim());
-  } else {
-    fail('npm pack --dry-run 失败', (packResult.stderr || packResult.stdout || '').trim());
-  }
+if (packResult.status === 0) {
+  pass('npm pack --dry-run 通过', (packResult.stdout || '').trim());
+} else {
+  const packError = packResult.error ? `${packResult.error.message}\n` : '';
+  fail('npm pack --dry-run 失败', `${packError}${(packResult.stderr || packResult.stdout || '').trim()}`.trim());
+}
 } catch (error) {
   fail('QA 脚本执行异常', error.stack || error.message);
 }
