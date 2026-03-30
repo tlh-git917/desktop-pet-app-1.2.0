@@ -1,0 +1,51 @@
+{
+  "name": "desktop-pet-app",
+  "version": "1.2.0",
+  "description": "Virtual desktop pet with focus timer, role system, theme store, weather integration, visitor events, and productivity tools.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "check": "node scripts/qa-check.js",
+    "dist:win": "electron-builder --win nsis"
+  },
+  "dependencies": {
+    "electron": "^31.7.7"
+  },
+  "devDependencies": {
+    "electron-builder": "^24.13.3"
+  },
+  "author": "OpenAI",
+  "license": "MIT",
+  "build": {
+    "appId": "com.openai.desktoppet",
+    "productName": "Desktop Pet App",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "*.js",
+      "*.html",
+      "*.css",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "Desktop-Pet-App-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Desktop Pet App"
+    }
+  }
+}

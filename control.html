@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: file: https:; img-src 'self' data: file: https:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'self';" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>虚拟陪伴桌宠</title>
+</head>
+<body>
+  <div class="control-shell">
+    <header class="hero-header">
+      <div>
+        <div class="eyebrow">桌面宠物控制台</div>
+        <h1>让陪伴、专注、商店和 AI 真正为你服务</h1>
+        <p class="hero-subtitle">创建你的角色、设置专注节奏、屏蔽干扰网站、检查天气配置，并和桌宠保持自然对话。</p>
+      </div>
+      <div class="hero-actions">
+        <div class="status-chip" id="headerFocusStatus">未开始专注</div>
+        <div class="status-chip accent" id="headerRoleStatus">当前角色：默认陪伴</div>
+        <button class="btn ghost" id="themeToggleBtn">切换暗黑模式</button>
+      </div>
+    </header>
+
+    <main class="control-grid">
+      <section class="panel">
+        <div class="panel-title">角色工作室</div>
+        <div class="section grid2">
+          <div class="avatar-card">
+            <div class="section-label-row">
+              <div class="label">上传素材</div>
+              <span class="small">可选，不上传也能生成默认角色卡</span>
+            </div>
+            <div class="preview-box" id="uploadPreview">
+              <div class="preview-fallback">等待上传照片</div>
+            </div>
+            <div class="spacer"></div>
+            <button class="btn full" id="pickImageBtn">选择图片</button>
+          </div>
+          <div class="avatar-card">
+            <div class="section-label-row">
+              <div class="label">生成结果</div>
+              <span class="badge" id="styleBadge">Q版可爱</span>
+            </div>
+            <div class="preview-box" id="generatedPreview">
+              <div class="preview-fallback">点击生成角色后会在这里显示</div>
+            </div>
+            <div class="spacer"></div>
+            <div class="row row-end">
+              <button class="btn full" id="generateBtn">生成角色</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="label">角色基础信息</div>
+          <div class="grid2 compact-grid">
+            <input class="input" id="avatarName" placeholder="角色名称" />
+            <select class="input" id="avatarStyle">
+              <option value="cute">Q版可爱</option>
+              <option value="anime">二次元</option>
+              <option value="pixel">像素风</option>
+              <option value="scifi">未来科幻</option>
+            </select>
+            <select class="input" id="avatarMood">
+              <option value="happy">开心</option>
+              <option value="cool">冷静</option>
+              <option value="sleepy">犯困</option>
+              <option value="excited">兴奋</option>
+            </select>
+            <input class="input" id="avatarEnergy" type="number" min="0" max="100" value="70" placeholder="活力值" />
+          </div>
+          <div class="spacer"></div>
+          <div class="label">角色描述（提示词）</div>
+          <textarea class="textarea" id="editablePrompt" placeholder="桌宠的个性、形象和陪伴方式，都可以写在这里。"></textarea>
+          <div class="spacer"></div>
+          <div class="row row-end">
+            <button class="btn secondary" id="saveAvatarBtn">保存当前角色设定</button>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-label-row">
+            <div class="label">AI 服务配置</div>
+            <div class="row tight-row">
+              <span class="small">增强聊天</span>
+              <button class="btn ghost compact-btn" id="toggleLLMBtn">已关闭</button>
+            </div>
+          </div>
+          <div class="grid2 compact-grid">
+            <select class="input" id="aiProviderSelect">
+              <option value="openai">OpenAI</option>
+              <option value="zhipu">智谱 AI</option>
+              <option value="custom">自定义兼容接口</option>
+            </select>
+            <input class="input" id="apiKeyInput" type="password" placeholder="聊天 API Key" />
+          </div>
+          <div class="spacer"></div>
+          <div class="provider-block" id="openaiSettingsBlock">
+            <div class="label">OpenAI 模型</div>
+            <select class="input" id="openaiModelSelect">
+              <option value="gpt-4o-mini">gpt-4o-mini</option>
+              <option value="gpt-4.1-mini">gpt-4.1-mini</option>
+              <option value="gpt-4o">gpt-4o</option>
+            </select>
+          </div>
+          <div class="provider-block hidden" id="zhipuSettingsBlock">
+            <div class="label">智谱模型</div>
+            <select class="input" id="zhipuModelSelect">
+              <option value="glm-5-turbo">glm-5-turbo</option>
+              <option value="glm-5">glm-5</option>
+              <option value="glm-4.7-flash">glm-4.7-flash</option>
+            </select>
+          </div>
+          <div class="provider-block hidden" id="customSettingsBlock">
+            <div class="label">自定义聊天接口地址</div>
+            <input class="input" id="customApiUrlInput" placeholder="例如：https://example.com/v1/chat/completions" />
+          </div>
+          <details class="advanced-block">
+            <summary>高级：自定义图片生成接口</summary>
+            <div class="spacer"></div>
+            <div class="grid2 compact-grid">
+              <input class="input" id="imageApiUrlInput" placeholder="图片生成接口地址（可选）" />
+              <input class="input" id="imageApiKeyInput" type="password" placeholder="图片接口 API Key（可选）" />
+            </div>
+          </details>
+          <div class="spacer"></div>
+          <div class="row wrap-row">
+            <button class="btn secondary" id="saveApiSettingsBtn">保存 AI 设置</button>
+            <button class="btn ghost" id="testLLMBtn">测试聊天接口</button>
+            <label class="switch-line">
+              <input type="checkbox" id="alwaysOnTopToggle" />
+              <span>桌宠始终置顶</span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-title">专注与生产力</div>
+        <div class="focus-hero">
+          <div>
+            <div class="small" id="focusModeLabel">专注中</div>
+            <div class="timer" id="focusTimer">25:00</div>
+            <div class="small">当前任务：<span id="focusTaskText">开始今天最重要的一件事</span></div>
+          </div>
+          <div class="focus-side">
+            <div class="small">已完成轮次</div>
+            <div class="completed-sessions" id="completedSessions">0</div>
+          </div>
+        </div>
+        <div class="spacer"></div>
+        <div class="grid2">
+          <button class="btn" id="focusPrimaryBtn">开始专注</button>
+          <button class="btn secondary" id="focusResetBtn">重置</button>
+        </div>
+
+        <div class="section">
+          <div class="label">专注设置</div>
+          <input class="input" id="focusTaskInput" placeholder="当前专注任务" />
+          <div class="spacer"></div>
+          <div class="grid2 compact-grid">
+            <input class="input" id="focusMinutesInput" type="number" min="5" max="180" placeholder="专注分钟" />
+            <input class="input" id="breakMinutesInput" type="number" min="1" max="60" placeholder="休息分钟" />
+          </div>
+          <div class="spacer"></div>
+          <button class="btn secondary full" id="saveFocusSettingsBtn">保存专注设置</button>
+        </div>
+
+        <div class="section">
+          <div class="section-label-row">
+            <div class="label">今日计划</div>
+            <span class="small" id="planProgress">已完成 0/0</span>
+          </div>
+          <div id="planList" class="list-stack"></div>
+          <div class="spacer"></div>
+          <div class="row row-stretch">
+            <input class="input" id="newPlanInput" placeholder="添加新计划，例如：整理周报" />
+            <button class="btn" id="addPlanBtn">添加</button>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-label-row">
+            <div class="label">网站屏蔽器</div>
+            <span class="small" id="focusBlockHint">专注时会拦截这些域名</span>
+          </div>
+          <div class="row row-stretch">
+            <input class="input" id="blockedSiteInput" placeholder="输入域名，例如 youtube.com" />
+            <button class="btn" id="addBlockedSiteBtn">添加</button>
+          </div>
+          <div class="spacer"></div>
+          <div id="blockedSiteList" class="pill-list"></div>
+          <div class="spacer"></div>
+          <div class="grid2 compact-grid">
+            <input class="input" id="blockPreviewUrlInput" placeholder="输入网址验证拦截效果" />
+            <button class="btn secondary" id="openBlockPreviewBtn">打开验证页</button>
+          </div>
+          <div class="small section-hint">说明：该功能基于 Electron 会话拦截，适合在应用内验证页或内嵌网页访问时使用。</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-title">陪伴中心</div>
+
+        <div class="section wallet-card">
+          <div>
+            <div class="small">专注币余额</div>
+            <div class="wallet-amount" id="focusCoinsDisplay">余额：0</div>
+          </div>
+          <div class="wallet-meta">
+            <div class="small" id="happinessDisplay">快乐度：70/100</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-label-row">
+            <div class="label">主题商店</div>
+            <span class="small">购买后可立即应用到桌宠外观</span>
+          </div>
+          <div id="themeStoreList" class="theme-list"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-label-row">
+            <div class="label">已保存角色</div>
+            <div class="row tight-row">
+              <span class="small" id="roleCount">0 个角色</span>
+              <button class="btn ghost compact-btn" id="triggerVisitorBtn">立即触发访客</button>
+            </div>
+          </div>
+          <div id="roleList" class="list-stack"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-label-row">
+            <div class="label">天气设置</div>
+            <span class="small">用于“今天天气怎么样”这类问题</span>
+          </div>
+          <div class="grid2 compact-grid">
+            <input class="input" id="weatherCityInput" placeholder="城市，例如：Beijing 或 北京" />
+            <input class="input" id="weatherApiKeyInput" type="password" placeholder="OpenWeather API Key" />
+          </div>
+          <div class="spacer"></div>
+          <div class="row wrap-row">
+            <button class="btn secondary" id="saveWeatherSettingsBtn">保存天气设置</button>
+            <button class="btn ghost" id="testWeatherBtn">测试天气配置</button>
+          </div>
+          <div class="spacer"></div>
+          <div class="weather-card" id="weatherResultCard">
+            <div class="small">还没有测试天气配置。</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-label-row">
+            <div class="label">陪伴聊天</div>
+            <span class="small">支持情景感知与天气问答</span>
+          </div>
+          <div class="chat-list" id="chatList"></div>
+          <div class="spacer"></div>
+          <div class="row row-stretch">
+            <input class="input" id="chatInput" placeholder="和桌宠说句话，例如：帮我鼓励一下，或者今天天气怎么样？" />
+            <button class="btn" id="sendChatBtn">发送</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="toast-zone" id="toastZone"></div>
+  </div>
+
+  <script src="renderer-config.js"></script>
+  <script src="sound-player.js"></script>
+  <script src="control.js"></script>
+</body>
+</html>
